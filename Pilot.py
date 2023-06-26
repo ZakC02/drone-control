@@ -47,18 +47,10 @@ LABELS = ["neutre", "decollage", "droite", "gauche", "atterir",
 # mypc_address = (host, port)
 
 socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-socket.bind(('localhost', 8889))
+socket.bind(('', 8889))
 socket.setblocking(False)
 socket.sendto('command'.encode(' utf-8 '), tello_address)
-socket.sendto('streamon'.encode(' utf-8 '), tello_address)
 # socket.sendto ('battery?'.encode (' utf-8 '), tello_address)
-
-print("Start streaming")
-
-capture = cv2.VideoCapture('udp://0.0.0.0:11111', cv2.CAP_FFMPEG)
-if not capture.isOpened():
-    capture.open('udp://0.0.0.0:11111')
-
 
 def empty_socket_buffer():
     # Empty the socket buffer
@@ -68,15 +60,16 @@ def empty_socket_buffer():
             if not data:
                 # No more data available
                 break
-        except socket.error as e:
-            if e.errno == socket.errno.EWOULDBLOCK:
+        except:
+            #if e.errno == socket.errno.EWOULDBLOCK:
                 # No more data available for non-blocking socket
-                break
-            else:
+            break
+            #else:
                 # Other socket error
-                raise
+                #raise
         # Process the received data
         print("Received data:", data)
+
 
 def wait_for_ok_response():
     response = b""
@@ -91,13 +84,15 @@ def wait_for_ok_response():
             if b"ok" in response:
                 # Response received
                 break
-        except socket.error as e:
-            if e.errno == socket.errno.EWOULDBLOCK:
-                # No more data available for non-blocking socket
-                continue
-            else:
-                # Other socket error
-                raise
+        #except socket.error as e:
+        #    if e.errno == socket.errno.EWOULDBLOCK:
+        #        # No more data available for non-blocking socket
+        #        continue
+        #    else:
+        #        # Other socket error
+        #        raise
+        except:
+            continue
 
 
 def get_socket_response():
@@ -110,13 +105,15 @@ def get_socket_response():
                 # No more data available
                 break
             response += data
-        except socket.error as e:
-            if e.errno == socket.errno.EWOULDBLOCK:
-                # No more data available for non-blocking socket
-                break
-            else:
-                # Other socket error
-                raise
+        #except socket.error as e:
+        #    if e.errno == socket.errno.EWOULDBLOCK:
+        #        # No more data available for non-blocking socket
+        #        break
+        #    else:
+        #        # Other socket error
+        #        raise
+        except:
+            break
     if response:
         return response.decode()
     else:
@@ -124,7 +121,7 @@ def get_socket_response():
 
 
 def sendToDrone(command):
-    labels = {'decollage': 'up 50', 'droite': 'right 50', 'gauche': 'left 50', 'atterir': 'down 50',
+    labels = {'decollage': 'up 50', 'droite': 'left 50', 'gauche': 'right 50', 'atterir': 'down 50',
               'reculer': 'back 50', 'rapprocher': 'forward 50', 'flip': 'flip r', 'gear second': 'speed 20', 'fortnite': 'flip b'}
     if command not in labels.keys():
         return
@@ -132,16 +129,24 @@ def sendToDrone(command):
     print(f"Sending command : {command_name}")
     socket.sendto(command_name, tello_address)
 
-time.sleep(5)
+
+#time.sleep(5)
 empty_socket_buffer()
 socket.sendto('takeoff'.encode(' utf-8 '), tello_address)
 wait_for_ok_response()
-socket.sendto('up 200'.encode(' utf-8 '), tello_address)
+socket.sendto('up 100'.encode(' utf-8 '), tello_address)
 wait_for_ok_response()
 
 frame_rate = 4
 prev = 0
 resp = ""
+socket.sendto('streamon'.encode(' utf-8 '), tello_address)
+wait_for_ok_response()
+print("Start streaming")
+capture = cv2.VideoCapture('udp://0.0.0.0:11111', cv2.CAP_FFMPEG)
+if not capture.isOpened():
+    capture.open('udp://0.0.0.0:11111')
+sendToDrone("flip")
 while True:
     # Récupérer la sortie vidéo
     time_elapsed = time.time() - prev
@@ -163,7 +168,7 @@ while True:
                 # draw skeleton on the frame
                 # mp_drawing.draw_landmarks(frame, pose_results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
                 # display the frame
-                # cv2.imshow('Output', frame)
+                cv2.imshow('Output', frame)
                 # computations
                 pred = analyze(pose_results.pose_landmarks)
                 pred2 = model.predict(np.expand_dims(
@@ -171,14 +176,13 @@ while True:
                 print(LABELS[np.argmax(pred2)],
                       pred2[0][np.argmax(pred2)] * 100)
                 command = LABELS[np.argmax(pred2)]
-                if(resp == "ok"):
-                    sendToDrone(command)
-                    resp = None
+                print("resp is ", resp)
+                sendToDrone(command)
             except:
                 print("not found")
             # cv2.imshow('frame', frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
-        sendToDrone("atterir")
+        socket.sendto('emergency'.encode(' utf-8 '), tello_address)
         break
 
 
