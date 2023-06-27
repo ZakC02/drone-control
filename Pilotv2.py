@@ -6,8 +6,8 @@ import mediapipe as mp
 import numpy as np
 
 
-
 model = keras.models.load_model("model.h5")
+
 
 def analyze(landmarks):
     array = list(landmarks.landmark)
@@ -29,12 +29,13 @@ def analyze(landmarks):
         array_f.append(z)
     return np.asarray(array_f)
 
+
 def sendToDrone(command):
     dist = 50
     if command == "neutre":
         drone.get_height()
     elif command == "decollage":
-        drone.takeoff()
+        drone.move_up(dist)
     elif command == "atterir" and drone.get_height() <= 30:
         drone.land()
     elif command == "atterir" and drone.get_height() > 30:
@@ -55,7 +56,7 @@ def sendToDrone(command):
         drone.flip_forward()
     elif command == "fortnite":
         drone.flip_back()
-    
+
 
 # initialize pose estimator
 mp_drawing = mp.solutions.drawing_utils
@@ -72,7 +73,7 @@ print(drone.get_battery())
 drone.streamon()
 drone.takeoff()
 drone.move_up(100)
-
+pipe = ["neutre" for i in range(15)]
 while True:
     img = drone.get_frame_read().frame
     try:
@@ -84,21 +85,26 @@ while True:
         pose_results = pose.process(img)
         # print(pose_results.pose_landmarks)
         # draw skeleton on the frame
-        #mp_drawing.draw_landmarks(img, pose_results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+        # mp_drawing.draw_landmarks(img, pose_results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
         # display the frame
-        #cv2.imshow('Output', img)
+        # cv2.imshow('Output', img)
         # computations
         pred = analyze(pose_results.pose_landmarks)
         pred2 = model.predict(np.expand_dims(
             pred, axis=0), verbose=False)
-        print(LABELS[np.argmax(pred2)],
-                pred2[0][np.argmax(pred2)] * 100)
-        sendToDrone(LABELS[np.argmax(pred2)])
+        gesture = LABELS[np.argmax(pred2)]
+        print(gesture, pred2[0][np.argmax(pred2)] * 100)
+        pipe.append(gesture)
+        pipe.pop(0)
+        if pipe.count(gesture) >= 10:
+            drone.sendToDrone(gesture)
+        else:
+            drone.sendToDrone("neutre")
     except:
         print("not found")
         drone.get_height()
-    
-    #time.sleep(1 / fps)
+
+    # time.sleep(1 / fps)
     #
     # cv2.imshow("Live Video Feed", img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
