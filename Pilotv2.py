@@ -49,14 +49,19 @@ def sendToDrone(command):
     elif command == "rapprocher":
         drone.move_forward(dist)
     elif command == "flip":
-        drone.flip_back()
+        drone.flip_right()
     elif command == "gear second":
         drone.flip_forward()
-        drone.flip_forward()
-        drone.flip_forward()
-    elif command == "fortnite":
+        drone.move_down(20)
+        drone.move_up(20)
         drone.flip_back()
 
+    elif command == "fortnite":
+        for i in range(5):
+            drone.flip_right()
+            drone.flip_left()
+    
+    
 
 # initialize pose estimator
 mp_drawing = mp.solutions.drawing_utils
