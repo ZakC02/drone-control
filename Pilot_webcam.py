@@ -34,11 +34,11 @@ def sendToDrone(command):
     dist = 50
     if command == "neutre":
         drone.get_height()
-    elif command == "decollage" and drone.get_height() <= 250:
+    elif command == "decollage":
         drone.move_up(dist)
-    elif command == "atterir" and drone.get_height() <= 50:
+    elif command == "atterir" and drone.get_height() <= 20:
         drone.land()
-    elif command == "atterir" and drone.get_height() > 50:
+    elif command == "atterir" and drone.get_height() > 20:
         drone.move_down(dist)
     elif command == "droite":
         drone.move_left(dist)
@@ -51,17 +51,16 @@ def sendToDrone(command):
     elif command == "flip":
         drone.flip_right()
     elif command == "gear second":
-        #drone.flip_forward()
-        #drone.move_down(20)
-        #drone.move_up(20)
+        # drone.flip_forward()
+        # drone.move_down(20)
+        # drone.move_up(20)
         drone.flip_back()
 
     elif command == "fortnite":
-        #for i in range(5):
-            #drone.flip_right()
+        # for i in range(5):
+        # drone.flip_right()
         drone.flip_left()
-    
-    
+
 
 # initialize pose estimator
 mp_drawing = mp.solutions.drawing_utils
@@ -75,24 +74,26 @@ LABELS = ["neutre", "decollage", "droite", "gauche", "atterir",
 drone = tello.Tello()
 drone.connect()
 print(drone.get_battery())
-drone.streamon()
 drone.takeoff()
 drone.move_up(100)
 pipe = ["neutre" for i in range(5)]
-while True:
-    img = drone.get_frame_read().frame
+cap = cv2.VideoCapture(0)
+while cap.isOpened():
+    # read frame
+    _, frame = cap.read()
     try:
         # resize the frame for portrait video
         # frame = cv2.resize(frame, (350, 600))
         # process the frame for pose detection
         # convert rgb
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        pose_results = pose.process(img)
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        pose_results = pose.process(frame)
         # print(pose_results.pose_landmarks)
         # draw skeleton on the frame
-        # mp_drawing.draw_landmarks(img, pose_results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+        mp_drawing.draw_landmarks(
+            frame, pose_results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
         # display the frame
-        # cv2.imshow('Output', img)
+        cv2.imshow('Output', frame)
         # computations
         pred = analyze(pose_results.pose_landmarks)
         pred2 = model.predict(np.expand_dims(
@@ -111,8 +112,7 @@ while True:
         pipe.append("neutre")
         pipe.pop(0)
 
-    # time.sleep(1 / fps)
-    #
-    # cv2.imshow("Live Video Feed", img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+cap.release()
+cv2.destroyAllWindows()
