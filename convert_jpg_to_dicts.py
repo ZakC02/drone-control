@@ -30,7 +30,7 @@ pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
 
 
-for gesture in tqdm(range(0,10)):
+for gesture in tqdm(range(0,9)):
     #print a loading bar
     #print("Loading gesture " + str(gesture) + "...")
     for frame_path in os.listdir(input_path + str(gesture)):
