@@ -88,4 +88,4 @@ sn.heatmap(confusion_mat, cmap=sn.cubehelix_palette(as_cmap=True), fmt="g", anno
 plt.show()
 
 # Save the model
-#model.save('model.h5')
+model.save('model.h5')
