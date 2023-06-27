@@ -7,6 +7,7 @@ import pickle
 from sklearn.metrics import confusion_matrix
 import seaborn as sn
 import matplotlib.pyplot as plt
+#from tensorflow.keras.callbacks import TensorBoard
 
 # Constants
 num_points = 75
@@ -42,10 +43,10 @@ X_val, X_test, y_val, y_test = train_test_split(
 )
 
 # Define the log directory for TensorBoard
-#log_dir = "/content/logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+log_dir = "logs/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
 #logdir = os.path.join("logs", datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
-#tensorboard_callback = tf.keras.callbacks.TensorBoard(logdir, histogram_freq=1)
+tensorboard_callback = keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
 # Define the model architecture
 model = keras.Sequential([
@@ -70,7 +71,7 @@ model.compile(optimizer=optimizer,
 
 
 # Training the model
-model.fit(X_train, y_train, epochs=50, batch_size=32, validation_data=(X_test, y_test))
+model.fit(X_train, y_train, epochs=200, batch_size=32, validation_data=(X_test, y_test),callbacks=[tensorboard_callback])
 
 # Evaluation of the model
 loss, accuracy = model.evaluate(X_val, y_val)
@@ -87,4 +88,4 @@ sn.heatmap(confusion_mat, cmap=sn.cubehelix_palette(as_cmap=True), fmt="g", anno
 plt.show()
 
 # Save the model
-model.save('model.h5')
+#model.save('model.h5')
