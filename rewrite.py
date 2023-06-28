@@ -4,7 +4,22 @@ import mediapipe as mp
 from tensorflow import keras
 import numpy as np
 
-model = keras.models.load_model("model")
+num_points = 75
+num_classes = 9
+# Define the model architecture
+model = keras.Sequential([
+    keras.layers.GaussianNoise(0.1, input_shape=(num_points,)),
+    #keras.layers.BatchNormalization(), -> Only for SGD
+    keras.layers.Dense(128, activation='relu'),
+    keras.layers.Dense(128, activation='relu'),
+    keras.layers.Dense(64, activation='relu'),
+    keras.layers.Dense(32, activation='relu'),
+    keras.layers.Dense(16, activation='relu'),
+    keras.layers.Dense(num_classes, activation='softmax')
+])
+model.load_weights("model.h5")
+
+
 
 def analyze(landmarks):
     array = list(landmarks.landmark)
