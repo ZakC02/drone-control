@@ -35,11 +35,11 @@ def sendToDrone(command):
     if command == "neutre":
         drone.get_height()
     elif command == "decollage" and drone.get_height() <= 250:
-        drone.move_up(dist)
+        drone.move_up(dist//2)
     elif command == "atterir" and drone.get_height() <= 50:
         drone.land()
     elif command == "atterir" and drone.get_height() > 50:
-        drone.move_down(dist)
+        drone.move_down(dist//2)
     elif command == "droite":
         drone.move_left(dist)
     elif command == "gauche":
@@ -55,11 +55,6 @@ def sendToDrone(command):
         #drone.move_down(20)
         #drone.move_up(20)
         drone.flip_back()
-
-    elif command == "fortnite":
-        #for i in range(5):
-            #drone.flip_right()
-        drone.flip_left()
     
     
 
@@ -70,7 +65,7 @@ pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
 
 LABELS = ["neutre", "decollage", "droite", "gauche", "atterir",
-          "reculer", "rapprocher", "flip", "gear second", "fortnite"]
+          "reculer", "rapprocher", "flip", "gear second"]
 
 drone = tello.Tello()
 drone.connect()
@@ -78,7 +73,8 @@ print(drone.get_battery())
 drone.streamon()
 drone.takeoff()
 drone.move_up(100)
-pipe = ["neutre" for i in range(5)]
+drone.set_speed(20)
+pipe = ["neutre" for i in range(10)]
 while True:
     img = drone.get_frame_read().frame
     try:
@@ -90,18 +86,20 @@ while True:
         pose_results = pose.process(img)
         # print(pose_results.pose_landmarks)
         # draw skeleton on the frame
-        # mp_drawing.draw_landmarks(img, pose_results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+        mp_drawing.draw_landmarks(img, pose_results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
         # display the frame
-        # cv2.imshow('Output', img)
+        cv2.imshow('Output', img)
         # computations
         pred = analyze(pose_results.pose_landmarks)
         pred2 = model.predict(np.expand_dims(
             pred, axis=0), verbose=False)
         gesture = LABELS[np.argmax(pred2)]
         print(gesture, pred2[0][np.argmax(pred2)] * 100)
+        if pred2[0][np.argmax(pred2)] < 0.8:
+            gesture = "neutre"
         pipe.append(gesture)
         pipe.pop(0)
-        if pipe.count(gesture) >= 3:
+        if pipe.count(gesture) == len(pipe):
             sendToDrone(gesture)
         else:
             sendToDrone("neutre")

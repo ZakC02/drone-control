@@ -4,7 +4,7 @@ import mediapipe as mp
 from tensorflow import keras
 import numpy as np
 
-model = keras.models.load_model("model.h5")
+model = keras.models.load_model("model")
 
 def analyze(landmarks):
     array = list(landmarks.landmark)
@@ -15,8 +15,7 @@ def analyze(landmarks):
     #valid = sum(visibilities)
     #if valid < 22:
     #    print("invalid")
-    #    #return
-    #else:
+    #    return
     for point in array:
         x = point.x
         y = point.y
@@ -54,6 +53,8 @@ while cap.isOpened():
         pred = analyze(pose_results.pose_landmarks)
         pred2 = model.predict(np.expand_dims(pred,axis=0),verbose=False)
         print(LABELS[np.argmax(pred2)], pred2[0][np.argmax(pred2)] * 100)
+        if pred2[0][np.argmax(pred2)] < 0.8:
+            print("neutre")
     except:
         print("not found")
     

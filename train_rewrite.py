@@ -71,7 +71,7 @@ model.compile(optimizer=optimizer,
 
 
 # Training the model
-model.fit(X_train, y_train, epochs=200, batch_size=32, validation_data=(X_test, y_test),callbacks=[tensorboard_callback])
+model.fit(X_train, y_train, epochs=100, batch_size=32, validation_data=(X_test, y_test),callbacks=[tensorboard_callback])
 
 # Evaluation of the model
 loss, accuracy = model.evaluate(X_val, y_val)
@@ -88,4 +88,4 @@ sn.heatmap(confusion_mat, cmap=sn.cubehelix_palette(as_cmap=True), fmt="g", anno
 plt.show()
 
 # Save the model
-model.save('model.h5')
+model.save('model')
