@@ -78,17 +78,16 @@ mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
 
-LABELS = ["neutre", "decollage", "droite", "gauche", "atterir",
-          "reculer", "rapprocher", "flip", "gear second"]
+LABELS = ["neutre", "decollage", "droite", "gauche", "rapprocher", "reculer", "atterir", "flip", "gear second"]
 
 drone = tello.Tello()
 drone.connect()
 print(drone.get_battery())
 drone.streamon()
-#drone.takeoff()
-#drone.move_up(100)
-#drone.set_speed(20)
-pipe = ["neutre" for i in range(10)]
+drone.takeoff()
+drone.move_up(100)
+drone.set_speed(30)
+pipe = ["neutre" for i in range(7)]
 while True:
     img = drone.get_frame_read().frame
     try:
@@ -114,8 +113,7 @@ while True:
         pipe.append(gesture)
         pipe.pop(0)
         if pipe.count(gesture) == len(pipe):
-            sendToDrone("neutre")
-            #sendToDrone(gesture)
+            sendToDrone(gesture)
         else:
             sendToDrone("neutre")
     except:
