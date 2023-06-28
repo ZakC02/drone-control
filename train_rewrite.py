@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 # Constants
 num_points = 75
-num_classes = 10
+num_classes = 9
 #Import dataset
 with open('dataset.pickle', 'rb') as f:
     dataset = pickle.load(f)
@@ -50,7 +50,7 @@ tensorboard_callback = keras.callbacks.TensorBoard(log_dir=log_dir, histogram_fr
 
 # Define the model architecture
 model = keras.Sequential([
-    tf.keras.layers.GaussianNoise(0.1, seed=None, input_shape=(num_points,)),
+    tf.keras.layers.GaussianNoise(0.1, input_shape=(num_points,)),
     #keras.layers.BatchNormalization(), -> Only for SGD
     keras.layers.Dense(128, activation='relu'),
     keras.layers.Dense(128, activation='relu'),
@@ -88,4 +88,4 @@ sn.heatmap(confusion_mat, cmap=sn.cubehelix_palette(as_cmap=True), fmt="g", anno
 plt.show()
 
 # Save the model
-model.save('model')
+model.save('model.h5')
