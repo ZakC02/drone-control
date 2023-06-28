@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 num_points = 75
 num_classes = 9
 #Import dataset
-with open('dataset.pickle', 'rb') as f:
+with open('dataset2.pickle', 'rb') as f:
     dataset = pickle.load(f)
 values = dataset["arrays"]
 labels = dataset["labels"]

@@ -46,7 +46,7 @@ mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
 
-LABELS = ["neutre", "decollage", "droite", "gauche", "atterir", "reculer", "rapprocher", "flip", "gear second", "fortnite"]
+LABELS = ["neutre", "decollage", "droite", "gauche", "rapprocher", "reculer", "atterir", "flip", "gear second"]
 
 cap = cv2.VideoCapture(0)
 while cap.isOpened():
