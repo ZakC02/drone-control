@@ -59,7 +59,6 @@ while cap.isOpened():
         # convert to RGB
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         # process the frame for pose detection
-        date = time.time()
         pose_results = pose.process(frame_rgb)
         # print(pose_results.pose_landmarks)
         # draw skeleton on the frame
@@ -72,7 +71,6 @@ while cap.isOpened():
         print(LABELS[np.argmax(pred2)], pred2[0][np.argmax(pred2)] * 100)
         if pred2[0][np.argmax(pred2)] < 0.8:
             print("neutre")
-        print(time.time() - date)
     except:
         print("not found")
     
