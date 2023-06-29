@@ -6,7 +6,7 @@ import mediapipe as mp
 import numpy as np
 
 
-model = keras.models.load_model("hands_version/model.h5")
+model = keras.models.load_model("models/model_mains.h5")
 
 
 def analyze(landmarks):

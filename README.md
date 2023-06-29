@@ -4,7 +4,7 @@ Ce dépôt contient le code source et les ressources nécessaires pour le projet
 
 ## Depuis la mise à jour du projet avec Mediapipe
 
-Pour tester le classificateur, il suffit de lancer `rewrite.py`, et pour utiliser le projet dans son ensemble en utilisant un ordinateur au lieu de la Jetson, il faut lancer `Pilotv2.py` après s'être connecté au WiFi du drone Tello.  
+Pour tester le projet, il suffit de lancer les programmes du dossier `scripts/`.
 Le dépôt contient également la matrice de confusion de notre classificateur `Confusion_Matrix2.png` et la courbe d'apprentissage pour 200 *epochs*, `training_curve.png`.
 
 ---

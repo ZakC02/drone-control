@@ -56,7 +56,7 @@ def decompose_videos_in_folders(input_folder):
             g = g + 1
 
 # Example usage
-input_folder = "hands_version/videos"
+input_folder = "."
 
 decompose_videos_in_folders(input_folder)
 

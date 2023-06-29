@@ -19,7 +19,7 @@ model = keras.Sequential([
     keras.layers.Dense(16, activation='relu'),
     keras.layers.Dense(num_classes, activation='softmax')
 ])
-model.load_weights("model.h5")
+model.load_weights("models/model_gestes.h5")
 
 
 
