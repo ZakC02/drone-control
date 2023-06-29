@@ -2,5 +2,5 @@ mediapipe/
 installSwapfile/
 dataset_pictures/
 hands_version/
-_pycache_/
+__pycache__/
 .vscode/
