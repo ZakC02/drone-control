@@ -1,4 +1,5 @@
 mediapipe/
 installSwapfile/
 dataset_pictures/
-hands_version/
+hands_version/dataset_pictures/
+hands_version/videos/
